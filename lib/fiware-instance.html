@@ -1,0 +1,33 @@
+<script type="text/javascript">
+    RED.nodes.registerType('fiware-instance',{
+        category: 'config',
+        defaults: {
+            fw_protocol: {value:"http", required:true},
+            fw_host: {value:"localhost",required:true},
+            fw_port: {value:1234,required:true,validate:RED.validators.number()},
+            fw_token: {value:""}
+        },
+        label: function() {
+            return this.fw_protocol+'://'+this.fw_host+":"+this.fw_port;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="fiware-instance">
+    <div class="form-row">
+        <label for="node-config-input-fw_protocol"><i class="icon-bookmark"></i> Protocol</label>
+        <input type="text" id="node-config-input-fw_protocol">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-fw_host"><i class="icon-bookmark"></i> Host</label>
+        <input type="text" id="node-config-input-fw_host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-fw_port"><i class="icon-bookmark"></i> Port</label>
+        <input type="text" id="node-config-input-fw_port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-fw_token"><i class="icon-bookmark"></i> Auth Token</label>
+        <input type="text" id="node-config-input-fw_token">
+    </div>
+</script>
