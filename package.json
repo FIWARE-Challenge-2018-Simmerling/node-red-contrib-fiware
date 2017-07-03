@@ -20,9 +20,9 @@
   "keywords": [ "node-red" ],
   "node-red"     : {
     "nodes": {
-      "fiware-instance": "lib/fiware-instance.js",
-      "fiware-device-in": "lib/fiware-device-in.js",
-      "fiware-device-out": "lib/fiware-device-out.js"
+      "fiware-instance": "src/fiware-instance.js",
+      "fiware-device-in": "src/fiware-device-in.js",
+      "fiware-device-out": "src/fiware-device-out.js"
     }
   }
 }
