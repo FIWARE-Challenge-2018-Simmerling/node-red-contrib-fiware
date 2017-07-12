@@ -1,12 +1,12 @@
 <script type="text/javascript">
     RED.nodes.registerType('fiware-device-out',{
-        category: 'FiWare',
+        category: 'output',
         color: '#a6bbcf',
         defaults: {
-            fw_server: {value:"", type:"fiware-instance"},
-            fw_name: {value:""},
-            fw_id: {value: "", required:true},
-            fw_type: {value: "", required:true}
+            fw_server:  {value: "", type:"fiware-instance" },
+            fw_name:    {value: "", required:true},
+            fw_id:      {value: "", required:true},
+            fw_type:    {value: "", type:"fiware-device-type"},
         },
         inputs:1,
         outputs:0,
@@ -19,7 +19,7 @@
 
 <script type="text/x-red" data-template-name="fiware-device-out">
     <div class="form-row">
-        <label for="node-input-fw_server"><i class="icon-tag"></i> Server</label>
+        <label for="node-input-fw_server"><i class="icon-tag"></i> Broker</label>
         <input type="text" id="node-input-fw_server" placeholder="Server">
     </div>
     <div class="form-row">
@@ -37,5 +37,5 @@
 </script>
 
 <script type="text/x-red" data-help-name="fiware-device-out">
-    <p>A node that sends the message payload to FiWare's Orion Context Broker</p>
+    <p>A node that is represented as a device towards the Fiware Orion Context Broker.</p>
 </script>

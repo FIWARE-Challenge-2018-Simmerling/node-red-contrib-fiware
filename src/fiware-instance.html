@@ -1,33 +1,36 @@
 <script type="text/javascript">
-    RED.nodes.registerType('fiware-instance',{
+    RED.nodes.registerType('fiware-instance', {
         category: 'config',
+        color: '#a6bbcf',
         defaults: {
-            fw_protocol: {value:"http", required:true},
-            fw_host: {value:"localhost",required:true},
-            fw_port: {value:1234,required:true,validate:RED.validators.number()},
-            fw_token: {value:""}
+            fw_protocol: { value:"http", required:true },
+            fw_host:     { value:"localhost", required:true },
+            fw_port:     { value:1026, required:true, validate:RED.validators.number() },
+            fw_token:    { value:"" }
         },
+        icon: "white-globe.png",
+        align: "right",
         label: function() {
             return this.fw_protocol+'://'+this.fw_host+":"+this.fw_port;
-        }
+        },
     });
 </script>
 
 <script type="text/x-red" data-template-name="fiware-instance">
     <div class="form-row">
-        <label for="node-config-input-fw_protocol"><i class="icon-bookmark"></i> Protocol</label>
-        <input type="text" id="node-config-input-fw_protocol">
+        <label for="node-config-input-fw_protocol"><i class="icon-tag"></i> Protocol</label>
+        <input type="text" id="node-config-input-fw_protocol" placeholder="http">
     </div>
     <div class="form-row">
-        <label for="node-config-input-fw_host"><i class="icon-bookmark"></i> Host</label>
-        <input type="text" id="node-config-input-fw_host">
+        <label for="node-config-input-fw_host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-config-input-fw_host" placeholder="localhost">
     </div>
     <div class="form-row">
-        <label for="node-config-input-fw_port"><i class="icon-bookmark"></i> Port</label>
-        <input type="text" id="node-config-input-fw_port">
+        <label for="node-config-input-fw_port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-config-input-fw_port" placeholder="1026">
     </div>
     <div class="form-row">
-        <label for="node-config-input-fw_token"><i class="icon-bookmark"></i> Auth Token</label>
+        <label for="node-config-input-fw_token"><i class="icon-tag"></i> Auth Token</label>
         <input type="text" id="node-config-input-fw_token">
     </div>
 </script>

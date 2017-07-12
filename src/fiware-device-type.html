@@ -1,0 +1,106 @@
+<script type="text/javascript">
+    const nameFieldProperties = {
+	class: "node-input-attribute-property-name",
+	style: "width: 45%; margin-left: 5px; text-align: left;"
+    };
+
+    const typeFieldProperties = {
+	class: "node-input-attribute-property-type",
+	style: "width: 45%; margin-left: 5px; text-align: left;"
+    };
+
+    RED.nodes.registerType('fiware-device-type', {
+        category: 'config',
+        color: '#a6bbcf',
+        defaults: {
+	    type_name:  { value: "", required: true },
+	    attributes: { value: [], required: true },
+        },
+	oneditprepare: function() {
+	    var node = this;
+
+	    /* Insert javascript to handle attribute additions and deletions */
+	    $('#node-input-attribute-container')
+		.editableList({
+		    sortable: true,
+		    removable: true,
+		    addItem: function (container, i, opt) {
+			const attr = opt;
+			const  row = $('<div/>').appendTo(container);
+			$('<input/>', nameFieldProperties).appendTo(row).val(attr.name);
+			$('<input/>', typeFieldProperties).appendTo(row).val(attr.type);
+		    },
+		    removeItem: function(opt) {
+			// Nothing at the moment
+		    },
+		});
+
+	    /* Add existing attributes to the table */
+	    for (var i = 0; i < node.attributes.length; i++) {
+		const attr = node.attributes[i];
+		$('#node-input-attribute-container').editableList('addItem', attr);
+	    }
+	},
+	oneditsave: function() {
+	    const node = this;
+	    const attrs = $('#node-input-attribute-container').editableList('items');
+
+	    /* Add all attributes from the form to the node */
+	    node.attributes = [];
+	    attrs.each(function (attr) {
+		node.attributes.push({
+		    name: $(this).find(".node-input-attribute-property-name").val(),
+		    type: $(this).find(".node-input-attribute-property-type").val(),
+		});
+	    });
+	},
+        label: function() {
+            return this.type_name || "Unnamed type";
+        },
+    });
+</script>
+
+<script type="text/x-red" data-template-name="fiware-device-type">
+    <div class="form-row">
+        <label for="node-config-input-type_name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-type_name" placeholder="Name">
+    </div>
+    <div  class="form-row" style="width:100%; margin:auto;margin-bottom:10px;">
+        <label for="node-input-attribute-container">&nbsp;&#8594; Attributes</label>
+    </div>
+    <div class="form-row node-input-attribute-container-row">
+	<div class="red-ui-editableList">
+            <div class="red-ui-editableList-container">
+                <ol id="node-input-attribute-container-head"
+		    style="min-height:auto; min-width: 450px; height: auto; margin-right:17px;"
+		    class="red-ui-editableList-list ui-sortable">
+                    <li class="red-ui-editableList-item-sortable" style="border-bottom:none">
+                        <div class="red-ui-editableList-item-content">
+                            <div style="margin-top:-6px;">
+                                <span style="float: left; width:45%; margin-left: 5px;">
+				    <span class="node-input-rule-property-name">Name</span>
+				</span>
+                                <span style="float: left; width:45%; margin-left: 5px;">
+				    <span class="node-input-rule-property-type">Type</span>
+				</span>
+                            </div>
+                        </div>
+                        <!-- <i class="red-ui-editableList-item-handle fa fa-bars"></i> -->
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="form-row node-input-attribute-container-row" style="margin-top:-9px;">
+	<ol id="node-input-attribute-container" style="min-height: 250px; min-width: 500px">
+	</ol>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Device type">
+   <!-- data-help-name identifies the node type this help is for             -->
+   <!-- This content appears in the Info sidebar when a node is selected     -->
+   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
+   <!-- node in the palette.                                                 -->
+   <p>TBD.</p>
+</script>

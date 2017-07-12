@@ -1,70 +1,103 @@
-var Client = require('node-rest-client').Client;
-
-var createFiWareMessage = function(node, msg) {
-    var fwm =
-    {
-        "contextElements":[
-            {
-                "type":node.fw_type,
-                "isPattern":"false",
-                "id":node.fw_id,
-                "attributes":[
-                    {
-                        "name":node.fw_name,
-                        "type":node.fw_type,
-                        "value":msg.payload
-                    }
-                ]
-            }
-        ],
-        "updateAction":"APPEND"
-    };
-    return fwm;
-};
-
 module.exports = function(RED) {
-    function FiwareDeviceOutNode(config) {
-        RED.nodes.createNode(this, config);
-        var node = this;
-        node.fw_server = RED.nodes.getNode(config.fw_server);
-        node.fw_id = config.fw_id;
-        node.fw_name = config.fw_name;
-        node.fw_type = config.fw_type;
+    "use strict";
 
-        node.fiwareClient = new Client();
-        // handling client error events
-        node.fiwareClient.on('error', function (err) {
-            console.error('Something went wrong on the client', err);
-        });
+    const fetch = require('node-fetch');
+
+    const DefaultFetchHeaders = {
+        "Accept": "application/json",
+        'User-Agent': 'fetch',
+        'Content-Type': 'application/json',
+    };
+
+    function _createFiwareCreateMessage(node) {
+	/* Initial message */
+	const initial_msg = {
+	    id:   node.fw_id,
+	    type: node.fw_type.type_name,
+	};
+
+	return JSON.stringify(
+	    node.fw_type.attributes.reduce(
+		function (msg, attr) {
+		    msg[attr.name] = { value: null, type: attr.type };
+		    return msg;
+		},
+		initial_msg
+	    )
+	);
+    }
+
+    function _createFiwareModifyMessage(node, msg) {
+	return JSON.stringify(msg.payload);
+    }
+
+    function FiwareDeviceOutNode(options) {
+        const node = this;
+        RED.nodes.createNode(node, options);
+
+        node.fw_server = RED.nodes.getNode(options.fw_server);
+        node.fw_name   = options.fw_name;
+	node.fw_id     = options.fw_id;
+	node.fw_type   = RED.nodes.getNode(options.fw_type);
+
+	function _makeHeaders(headers) {
+	    return Object.assign(
+		{},
+		DefaultFetchHeaders,
+		headers,
+		{ "X-Auth-Token": node.fw_server.fw_token }
+	    );
+	}
+
+	async function _request(uri, method, headers, body) {
+	    try {
+		// XXX refactor
+		const base_uri = node.fw_server.fw_protocol + '://'
+		      + node.fw_server.fw_host + ":" + node.fw_server.fw_port;
+
+		console.log("fiware-device-out: " + method + ": " + body);
+
+		const res = await fetch(
+		    base_uri + uri,
+		    {
+			method: method,
+			body: body,
+			headers: headers,
+		    }
+		);
+                node.status({fill:"green", shape:"dot", text:node.fw_type.name + " sent"});
+		return res;
+	    } catch (e) {
+                node.status({fill:"red",shape:"dot",text:"error while sending data:" + e});
+	    }
+	}
+
+	function _request_create(msg) {
+	    const headers = _makeHeaders(node.headers);
+	    const body = _createFiwareCreateMessage(node, msg);
+	    return _request('/v2/entities', 'POST', headers, body);
+	}
+
+	function _request_update(msg) {
+	    const headers = _makeHeaders(node.headers);
+	    const body = _createFiwareModifyMessage(node, msg);
+	    return _request('/v2/entities/' + node.fw_id + "/attrs", 'PATCH', headers, body);
+	}
 
         node.on('input', function(msg) {
-            if (node.fw_server) {
-                // set content-type header and data as json in args parameter
-                var fwm = createFiWareMessage(node, msg);
-                var args = {
-                    data: fwm,
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                        "X-Auth-Token": node.fw_server.fw_token
-                    }
-                };
+            if (!node.fw_server) {
+                node.status({fill:"yellow", shape:"dot", text:"not configured"});
+		return;
+	    }
+	    _request_update(msg);
+        });
 
-                var uri = node.fw_server.fw_protocol+'://'+node.fw_server.fw_host+":"+node.fw_server.fw_port;
-                node.fiwareClient.post(uri + '/v1/updateContext', args, function (data, response) {
-                    node.status({fill:"green",shape:"dot",text:node.fw_type + " sent"});
-                }).on('error', function (err) {
-                    node.status({fill:"red",shape:"dot",text:"error while sending data"});
-                });
-            } else {
-                node.status({fill:"yellow",shape:"dot",text:"not configured"});
-            }
-        });
         node.on('close', function(done) {
-            //doSomethingWithACallback(function() {
-                done();
-            //});
+            done();
         });
+
+	/* Create a corresponding node in FIWARE */
+	_request_create(node);
     }
     RED.nodes.registerType("fiware-device-out",FiwareDeviceOutNode);
 };

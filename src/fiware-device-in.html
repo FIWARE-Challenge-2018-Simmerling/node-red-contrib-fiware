@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('fiware-device-in',{
-        category: 'FiWare',
+        category: 'input',
         color: '#FF7441',
         defaults: {
             fw_server: {value:"", type:"fiware-instance"},
@@ -11,8 +11,12 @@
         inputs:0,
         outputs:1,
         icon: "function.png",
+        align: "right",
         label: function() {
             return this.fw_id||"fiware-device-in";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
         }
     });
 </script>
@@ -27,11 +31,11 @@
         <input type="text" id="node-input-fw_id" placeholder="Id">
     </div>
     <div class="form-row">
-        <label for="node-input-fw_type"><i class="icon-tag"></i> Type</label>
+        <label for="node-input-fw_type"><i class="icon-tag"></i> Type name</label>
         <input type="text" id="node-input-fw_type" placeholder="Type">
     </div>
     <div class="form-row">
-        <label for="node-input-fw_interval"><i class="icon-tag"></i> Sampling Interval</label>
+        <label for="node-input-fw_interval"><i class="icon-tag"></i> Sampling interval</label>
         <input type="text" id="node-input-fw_interval" placeholder="Interval">
     </div>
 </script>

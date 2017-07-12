@@ -1,37 +1,25 @@
 var Client = require('node-rest-client').Client;
 
-var createFiWareMessage = function(node) {
-    var fwm = {
-        "entities":
-        [
-            {
-                "type": node.fw_type,
-                "isPattern": "false",
-                "id": node.fw_id
-            }
-        ]
-    };
-    return fwm;
-};
-
 var query = function(node) {
     if (node.fw_server) {
         // set content-type header and data as json in args parameter
-        var fwm = createFiWareMessage(node);
         var args = {
-            data: fwm,
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json",
                 "X-Auth-Token": node.fw_server.fw_token
             }
         };
 
         var uri = node.fw_server.fw_protocol+'://'+node.fw_server.fw_host+":"+node.fw_server.fw_port;
-        node.fiwareClient.post(uri + '/v1/queryContext', args, function (data, response) {
+        node.fiwareClient.get(uri + '/v2/entities/' + node.fw_id, args, function (data, response) {
             node.status({fill:"green",shape:"dot",text:node.fw_type + " received"});
-            var msg = { payload: data.contextResponses[0].contextElement.attributes[0].value };
-            node.send(msg);
+	    console.log("fiware-device-in: received " + JSON.stringify(data));
+	    try {
+		var msg = { payload: data };
+		node.send(msg);
+	    } catch (e) {
+		console.log("fiware-device-in: Error " + e);
+	    }
         }).on('error', function (err) {
             node.status({fill:"red",shape:"dot",text:"error while requesting data"});
         });
@@ -56,7 +44,7 @@ module.exports = function(RED) {
             console.error('Something went wrong on the client', err);
         });
 
-        listener = setInterval(query, 1000, node);
+        listener = setInterval(query, node.fw_interval, node);
         node.on('close', function(done) {
             if (listener !== 0)
                 clearInterval(listener);
