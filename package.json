@@ -1,14 +1,21 @@
 {
   "name": "node-red-contrib-fiware",
   "contributors": [
-    { "name": "Gonzalo Huerta-Canepa", "email": "gonzalo@huerta.cl" },
-    { "name": "Pekka Nikander", "email": "pekka.nikander@iki.fi" }
+    {
+      "name": "Gonzalo Huerta-Canepa",
+      "email": "gonzalo@huerta.cl"
+    },
+    {
+      "name": "Pekka Nikander",
+      "email": "pekka.nikander@iki.fi"
+    }
   ],
   "version": "0.0.2",
   "description": "A set of nodes to represent devices towards FIWARE",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "latest"
+    "node-fetch": "latest",
+    "node-rest-client": "latest"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -20,7 +27,9 @@
   "bugs": {
     "url": "https://github.com/Ell-i/node-red-contrib-fiware/issues"
   },
-  "keywords": [ "node-red" ],
+  "keywords": [
+    "node-red"
+  ],
   "node-red": {
     "nodes": {
       "fiware-instance": "src/fiware-instance.js",
