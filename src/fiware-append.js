@@ -47,7 +47,8 @@ module.exports = function(RED) {
 			headers: headers,
 		    }
 		);
-                node.status({fill:"green", shape:"dot", text:node.fw_name + " sent"});
+                node.status({fill:"green", shape:"dot", text:"ORION at " + node.fw_name + " updated"});
+		setTimeout(function() { node.status({fill:"grey", shape:"dot", text:"Idle"}); }, 2000);
 		return res;
 	    } catch (e) {
                 node.status({fill:"red",shape:"dot",text:"error while sending data:" + e});
